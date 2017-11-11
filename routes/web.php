@@ -35,6 +35,7 @@ Route::group(['middleware' => 'auth', "namespace" => "Admin"], function() {
 
 Route::group(['middleware' => 'auth', "namespace" => "Api"], function() {
     Route::get('/admin/v1/key', 'KeywordController@KeyLog');
+    Route::get('/admin/v1/page', 'KeywordController@Page');
 });
 
 

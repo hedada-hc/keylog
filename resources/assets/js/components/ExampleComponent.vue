@@ -22,7 +22,7 @@
                 <el-row>
                   <el-col :span="24"><div class="grid-content bg-purple-dark">
                         <el-button type="primary" @click="exportXLS">导出XLS<i class="el-icon-upload el-icon--right"></i></el-button>
-                        <el-date-picker v-model="value7" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="pickerOptions2"> </el-date-picker>
+                        <el-date-picker v-model="value6" value-format="yyyy-MM-dd" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
                   </div></el-col>
                 </el-row>
                 <el-table
@@ -55,6 +55,19 @@
                     </el-table-column>
                     <el-table-column prop="created_at" label="日期" sortable width="180"></el-table-column>
                   </el-table>
+                    
+                    <el-row class="page" style="margin-left:0px;margin-right:0px;" :gutter="20">
+                      <el-col :span="12" :offset="8"><div class="grid-content bg-purple">
+                            <el-pagination
+                              @size-change="handleSizeChange"
+                              @current-change="handleCurrentChange"
+                              :current-page.sync="currentPage1"
+                              :page-size="50"
+                              layout="total, prev, pager, next"
+                              :total="count">
+                            </el-pagination>
+                      </div></el-col>
+                    </el-row>
             </el-main>
         </el-container>
     </el-container>
@@ -64,52 +77,21 @@
         data() {
             return {
                 tableData: [],
-                activeIndex:1,
+                activeIndex:"1",
                 defaultActive:"",
-                pickerOptions2: {
-                  shortcuts: [{
-                    text: '最近一周',
-                    onClick(picker) {
-                      const end = new Date();
-                      const start = new Date();
-                      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                      picker.$emit('pick', [start, end]);
-                    }
-                  }, {
-                    text: '最近一个月',
-                    onClick(picker) {
-                      const end = new Date();
-                      const start = new Date();
-                      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                      picker.$emit('pick', [start, end]);
-                    }
-                  }, {
-                    text: '最近三个月',
-                    onClick(picker) {
-                      const end = new Date();
-                      const start = new Date();
-                      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                      picker.$emit('pick', [start, end]);
-                    }
-                  }]
-                },
-                value7:""
+                value6:"",
+                currentPage1:1,
+                count:0
             }
         },
         mounted() {
             this.queryKey();
         },
         methods:{
-            open3(){
-                this.$notify({
-                    title:"成功",
-                    message:"这是一条成功的提示消息",
-                    type:"success"
-                });
-            },
             queryKey(){
-                axios.get("/admin/v1/key").then(response => {
+                axios.get("/admin/v1/page?page=1").then(response => {
                     this.tableData = response.data.result;
+                    this.count = response.data.count
                 })
             },
             filterTag(){
@@ -119,8 +101,33 @@
 
             },
             exportXLS(){
-                axios.get("/admin/export").then(response => {
-                    console.log(response)
+                var url = "/admin/export?start="+this.value6[0]+"&end="+this.value6[1];
+                axios.get(url).then(response => {
+                    if(response.data.code == 404){
+                        this.$notify({
+                            title:"查询错误",
+                            message:response.data.message,
+                            type:"error",
+                            duration: 0
+                        })
+                    }else{
+                        window.location.href = url;
+                        this.$notify({
+                            title:"查询成功",
+                            message:"正在查询 "+this.value6[0]+" 至 "+this.value6[1]+" 期间的数据",
+                            type:"success"
+                        }) 
+                    }
+
+                })
+            },
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange(val) {
+                axios.get("/admin/v1/page?page="+val).then(response => {
+                    this.tableData = response.data.result;
+                    this.count = response.data.count;
                 })
             }
         }
@@ -156,5 +163,9 @@
     }
     .el-button--primary{
         float: right;
+    }
+    .page{
+        margin-left:0px;
+        margin-right:0px;
     }
 </style>

@@ -30,10 +30,31 @@ class KeywordController extends Controller
     }
 
     public function KeyLog(){
+        $count = keylog::all()->count();
         $data = keylog::latest()->take(10)->get();
+
         return response()->json([
             "code" => "200",
-            "result" => $data
+            "result" => $data,
+            "count" => $count
+        ]);
+    }
+
+    /*
+     * 分页数据   
+    */
+    public function Page(Request $request){
+        $count = keylog::all()->count();
+        if($request->get("page")){
+            $page = (abs($request->get("page")) * 100) - 100;
+            $pageData = keylog::latest("created_at")->offset($page)->limit(100)->get();
+        }else{
+            $pageData = keylog::latest("created_at")->offset(0)->limit(100)->get();
+        }
+        return response()->json([
+            "code" => 200,
+            "result" => $pageData,
+            "count" => $count
         ]);
     }
 }

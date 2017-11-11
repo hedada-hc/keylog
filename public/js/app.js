@@ -46646,7 +46646,7 @@ exports = module.exports = __webpack_require__(52)(undefined);
 
 
 // module
-exports.push([module.i, "\n.el-header{\n    padding: 0px;\n}\n.el-carousel__item h3 {\n    color: #475669;\n    font-size: 14px;\n    opacity: 0.75;\n    line-height: 150px;\n    margin: 0;\n}\n.el-carousel__item:nth-child(2n) {\n    background-color: #99a9bf;\n}\n.el-carousel__item:nth-child(2n+1) {\n    background-color: #d3dce6;\n}\n.el-menu{\n    height: 100%;\n}\n.el-row{\n    background-color: #ffffff;\n    padding: 20px;\n}\n.el-button--primary{\n    float: right;\n}\n", ""]);
+exports.push([module.i, "\n.el-header{\n    padding: 0px;\n}\n.el-carousel__item h3 {\n    color: #475669;\n    font-size: 14px;\n    opacity: 0.75;\n    line-height: 150px;\n    margin: 0;\n}\n.el-carousel__item:nth-child(2n) {\n    background-color: #99a9bf;\n}\n.el-carousel__item:nth-child(2n+1) {\n    background-color: #d3dce6;\n}\n.el-menu{\n    height: 100%;\n}\n.el-row{\n    background-color: #ffffff;\n    padding: 20px;\n}\n.el-button--primary{\n    float: right;\n}\n.page{\n    margin-left:0px;\n    margin-right:0px;\n}\n", ""]);
 
 // exports
 
@@ -47029,41 +47029,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
             tableData: [],
-            activeIndex: 1,
+            activeIndex: "1",
             defaultActive: "",
-            pickerOptions2: {
-                shortcuts: [{
-                    text: '最近一周',
-                    onClick: function onClick(picker) {
-                        var end = new Date();
-                        var start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                        picker.$emit('pick', [start, end]);
-                    }
-                }, {
-                    text: '最近一个月',
-                    onClick: function onClick(picker) {
-                        var end = new Date();
-                        var start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                        picker.$emit('pick', [start, end]);
-                    }
-                }, {
-                    text: '最近三个月',
-                    onClick: function onClick(picker) {
-                        var end = new Date();
-                        var start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                        picker.$emit('pick', [start, end]);
-                    }
-                }]
-            },
-            value7: ""
+            value6: "",
+            currentPage1: 1,
+            count: 0
         };
     },
     mounted: function mounted() {
@@ -47071,18 +47059,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     methods: {
-        open3: function open3() {
-            this.$notify({
-                title: "成功",
-                message: "这是一条成功的提示消息",
-                type: "success"
-            });
-        },
         queryKey: function queryKey() {
             var _this = this;
 
-            axios.get("/admin/v1/key").then(function (response) {
+            axios.get("/admin/v1/page?page=1").then(function (response) {
                 _this.tableData = response.data.result;
+                _this.count = response.data.count;
             });
         },
         filterTag: function filterTag() {
@@ -47090,8 +47072,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         formatter: function formatter() {},
         exportXLS: function exportXLS() {
-            axios.get("/admin/export").then(function (response) {
-                console.log(response);
+            var _this2 = this;
+
+            var url = "/admin/export?start=" + this.value6[0] + "&end=" + this.value6[1];
+            axios.get(url).then(function (response) {
+                if (response.data.code == 404) {
+                    _this2.$notify({
+                        title: "查询错误",
+                        message: response.data.message,
+                        type: "error",
+                        duration: 0
+                    });
+                } else {
+                    window.location.href = url;
+                    _this2.$notify({
+                        title: "查询成功",
+                        message: "正在查询 " + _this2.value6[0] + " 至 " + _this2.value6[1] + " 期间的数据",
+                        type: "success"
+                    });
+                }
+            });
+        },
+        handleSizeChange: function handleSizeChange(val) {
+            console.log("\u6BCF\u9875 " + val + " \u6761");
+        },
+        handleCurrentChange: function handleCurrentChange(val) {
+            var _this3 = this;
+
+            axios.get("/admin/v1/page?page=" + val).then(function (response) {
+                _this3.tableData = response.data.result;
+                _this3.count = response.data.count;
             });
         }
     }
@@ -47165,20 +47175,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "el-icon-upload el-icon--right"
   })]), _vm._v(" "), _c('el-date-picker', {
     attrs: {
+      "value-format": "yyyy-MM-dd",
       "type": "daterange",
-      "align": "right",
-      "unlink-panels": "",
       "range-separator": "至",
       "start-placeholder": "开始日期",
-      "end-placeholder": "结束日期",
-      "picker-options": _vm.pickerOptions2
+      "end-placeholder": "结束日期"
     },
     model: {
-      value: (_vm.value7),
+      value: (_vm.value6),
       callback: function($$v) {
-        _vm.value7 = $$v
+        _vm.value6 = $$v
       },
-      expression: "value7"
+      expression: "value6"
     }
   })], 1)])], 1), _vm._v(" "), _c('el-table', {
     staticStyle: {
@@ -47303,7 +47311,37 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "sortable": "",
       "width": "180"
     }
-  })], 1)], 1)], 1)], 1)
+  })], 1), _vm._v(" "), _c('el-row', {
+    staticClass: "page",
+    staticStyle: {
+      "margin-left": "0px",
+      "margin-right": "0px"
+    },
+    attrs: {
+      "gutter": 20
+    }
+  }, [_c('el-col', {
+    attrs: {
+      "span": 12,
+      "offset": 8
+    }
+  }, [_c('div', {
+    staticClass: "grid-content bg-purple"
+  }, [_c('el-pagination', {
+    attrs: {
+      "current-page": _vm.currentPage1,
+      "page-size": 50,
+      "layout": "total, prev, pager, next",
+      "total": _vm.count
+    },
+    on: {
+      "size-change": _vm.handleSizeChange,
+      "current-change": _vm.handleCurrentChange,
+      "update:currentPage": function($event) {
+        _vm.currentPage1 = $event
+      }
+    }
+  })], 1)])], 1)], 1)], 1)], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
