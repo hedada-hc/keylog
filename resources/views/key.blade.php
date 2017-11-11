@@ -8,5 +8,6 @@
 </head>
 <body>
 	<input type="text" oncopy="run()" value="复制我加微信">
+	<span obcopy="run()"> 测试微信号 </span>
 </body>
 </html>
