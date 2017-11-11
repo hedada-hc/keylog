@@ -84,10 +84,5 @@ class IndexController extends Controller
         //
     }
 
-    public function KeyLog(){
-        return response()->json([
-            "code" => "200",
-            "result" => keylog::all()
-        ]);
-    }
+    
 }

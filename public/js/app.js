@@ -46646,7 +46646,7 @@ exports = module.exports = __webpack_require__(52)(undefined);
 
 
 // module
-exports.push([module.i, "\n.el-header{\n    padding: 0px;\n}\n.el-carousel__item h3 {\n    color: #475669;\n    font-size: 14px;\n    opacity: 0.75;\n    line-height: 150px;\n    margin: 0;\n}\n.el-carousel__item:nth-child(2n) {\n    background-color: #99a9bf;\n}\n.el-carousel__item:nth-child(2n+1) {\n    background-color: #d3dce6;\n}\n.el-menu{\n    height: 100%;\n}\n", ""]);
+exports.push([module.i, "\n.el-header{\n    padding: 0px;\n}\n.el-carousel__item h3 {\n    color: #475669;\n    font-size: 14px;\n    opacity: 0.75;\n    line-height: 150px;\n    margin: 0;\n}\n.el-carousel__item:nth-child(2n) {\n    background-color: #99a9bf;\n}\n.el-carousel__item:nth-child(2n+1) {\n    background-color: #d3dce6;\n}\n.el-menu{\n    height: 100%;\n}\n.el-row{\n    background-color: #ffffff;\n    padding: 20px;\n}\n.el-button--primary{\n    float: right;\n}\n", ""]);
 
 // exports
 
@@ -47023,13 +47023,47 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
             tableData: [],
             activeIndex: 1,
-            defaultActive: ""
+            defaultActive: "",
+            pickerOptions2: {
+                shortcuts: [{
+                    text: '最近一周',
+                    onClick: function onClick(picker) {
+                        var end = new Date();
+                        var start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近一个月',
+                    onClick: function onClick(picker) {
+                        var end = new Date();
+                        var start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近三个月',
+                    onClick: function onClick(picker) {
+                        var end = new Date();
+                        var start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }]
+            },
+            value7: ""
         };
     },
     mounted: function mounted() {
@@ -47047,14 +47081,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         queryKey: function queryKey() {
             var _this = this;
 
-            axios.get("http://www.key.com/admin/api/key").then(function (response) {
+            axios.get("/admin/v1/key").then(function (response) {
                 _this.tableData = response.data.result;
             });
         },
         filterTag: function filterTag() {
             alert("sdsdsd");
         },
-        formatter: function formatter() {}
+        formatter: function formatter() {},
+        exportXLS: function exportXLS() {
+            axios.get("/admin/export").then(function (response) {
+                console.log(response);
+            });
+        }
     }
 });
 
@@ -47106,10 +47145,42 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('a', {
     attrs: {
-      "href": "http://www.key.com/key",
+      "href": "/admin/index",
       "target": "_blank"
     }
-  }, [_vm._v("首页")])])], 1)], 1), _vm._v(" "), _c('el-main', [_c('el-table', {
+  }, [_vm._v("首页")])])], 1)], 1), _vm._v(" "), _c('el-main', [_c('el-row', [_c('el-col', {
+    attrs: {
+      "span": 24
+    }
+  }, [_c('div', {
+    staticClass: "grid-content bg-purple-dark"
+  }, [_c('el-button', {
+    attrs: {
+      "type": "primary"
+    },
+    on: {
+      "click": _vm.exportXLS
+    }
+  }, [_vm._v("导出XLS"), _c('i', {
+    staticClass: "el-icon-upload el-icon--right"
+  })]), _vm._v(" "), _c('el-date-picker', {
+    attrs: {
+      "type": "daterange",
+      "align": "right",
+      "unlink-panels": "",
+      "range-separator": "至",
+      "start-placeholder": "开始日期",
+      "end-placeholder": "结束日期",
+      "picker-options": _vm.pickerOptions2
+    },
+    model: {
+      value: (_vm.value7),
+      callback: function($$v) {
+        _vm.value7 = $$v
+      },
+      expression: "value7"
+    }
+  })], 1)])], 1), _vm._v(" "), _c('el-table', {
     staticStyle: {
       "width": "100%"
     },

@@ -29,9 +29,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'auth', "namespace" => "Admin"], function() {
     Route::resource('/admin/index', "IndexController");
-    Route::get('/admin/api/key', "IndexController@KeyLog");
+    Route::get('/v1/key', 'KeywordController@KeyLog');
     Route::get('admin/export','ExcelController@export');
 });
 
+Route::group(['middleware' => 'auth', "namespace" => "Api"], function() {
+    Route::get('/admin/v1/key', 'KeywordController@KeyLog');
+});
 
 

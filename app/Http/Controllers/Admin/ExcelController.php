@@ -21,5 +21,9 @@ class ExcelController extends Controller
     			$sheet->rows($cellData);
     		});
     	})->export("xls");
+    	return response()->json([
+    		"code" => 200,
+    		"message" => "正在导出文档"
+    	]);
     }
 }

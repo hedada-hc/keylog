@@ -28,4 +28,12 @@ class KeywordController extends Controller
         //关键词重复 ip重复
         return keylog::where(['keyword' => $data['keyword'], 'ip' => $data['ip']])->get()->toArray();
     }
+
+    public function KeyLog(){
+        $data = keylog::latest()->take(10)->get();
+        return response()->json([
+            "code" => "200",
+            "result" => $data
+        ]);
+    }
 }

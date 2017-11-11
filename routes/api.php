@@ -20,6 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 //api 记录关键词
-Route::group(['namespace' => 'Api', 'prefix'=>'api','middleware'=>'throttle:5'], function(){
+Route::group(['namespace' => 'Api'], function(){
     Route::post('key', 'KeywordController@store');
 });

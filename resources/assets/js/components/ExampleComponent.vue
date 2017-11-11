@@ -15,10 +15,16 @@
         <el-container>
             <el-header>
                 <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" >
-                  <el-menu-item index="1"><a href="http://www.key.com/key" target="_blank">首页</a></el-menu-item>
+                  <el-menu-item index="1"><a href="/admin/index" target="_blank">首页</a></el-menu-item>
                 </el-menu>
             </el-header>
             <el-main>
+                <el-row>
+                  <el-col :span="24"><div class="grid-content bg-purple-dark">
+                        <el-button type="primary" @click="exportXLS">导出XLS<i class="el-icon-upload el-icon--right"></i></el-button>
+                        <el-date-picker v-model="value7" type="daterange" align="right" unlink-panels range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="pickerOptions2"> </el-date-picker>
+                  </div></el-col>
+                </el-row>
                 <el-table
                     :data="tableData"
                     style="width: 100%">
@@ -59,7 +65,35 @@
             return {
                 tableData: [],
                 activeIndex:1,
-                defaultActive:""
+                defaultActive:"",
+                pickerOptions2: {
+                  shortcuts: [{
+                    text: '最近一周',
+                    onClick(picker) {
+                      const end = new Date();
+                      const start = new Date();
+                      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                      picker.$emit('pick', [start, end]);
+                    }
+                  }, {
+                    text: '最近一个月',
+                    onClick(picker) {
+                      const end = new Date();
+                      const start = new Date();
+                      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                      picker.$emit('pick', [start, end]);
+                    }
+                  }, {
+                    text: '最近三个月',
+                    onClick(picker) {
+                      const end = new Date();
+                      const start = new Date();
+                      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                      picker.$emit('pick', [start, end]);
+                    }
+                  }]
+                },
+                value7:""
             }
         },
         mounted() {
@@ -74,7 +108,7 @@
                 });
             },
             queryKey(){
-                axios.get("http://www.key.com/admin/api/key").then(response => {
+                axios.get("/admin/v1/key").then(response => {
                     this.tableData = response.data.result;
                 })
             },
@@ -83,6 +117,11 @@
             },
             formatter(){
 
+            },
+            exportXLS(){
+                axios.get("/admin/export").then(response => {
+                    console.log(response)
+                })
             }
         }
     }
@@ -110,5 +149,12 @@
     }
     .el-menu{
         height: 100%;
+    }
+    .el-row{
+        background-color: #ffffff;
+        padding: 20px;
+    }
+    .el-button--primary{
+        float: right;
     }
 </style>
